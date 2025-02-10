@@ -4,15 +4,35 @@ import 'components/transaction_form.dart';
 import 'components/transaction_list.dart';
 import 'models/transaction.dart';
 
-void main() => runApp(const ExpensesApp());
+void main() => runApp(ExpensesApp());
 
 class ExpensesApp extends StatelessWidget {
-  const ExpensesApp({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MyHomePage(),
+    return MaterialApp(
+      home: const MyHomePage(),
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        colorScheme: ColorScheme.light(
+          primary: Colors.purple,
+          secondary: Colors.amber,
+        ),
+        textTheme: const TextTheme(
+          headlineSmall: TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        appBarTheme: const AppBarTheme(
+          titleTextStyle: TextStyle(
+            fontFamily: 'OpenSans',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -25,22 +45,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _transactions = [
-    Transaction(
-      id: 't1',
-      title: 'Novo Tênis de Corrida',
-      value: 310.76,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: 't2',
-      title: 'Conta de Luz',
-      value: 211.30,
-      date: DateTime.now(),
-    ),
-  ];
+  final List<Transaction> _transactions = [];
 
-  void _addTransaction(String title, double value) {
+  _addTransaction(String title, double value) {
+    if (title.isEmpty || value <= 0) {
+      return;
+    }
+
     final newTransaction = Transaction(
       id: Random().nextDouble().toString(),
       title: title,
@@ -55,7 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
     Navigator.of(context).pop();
   }
 
-  void _openTransactionFormModal(BuildContext context) {
+  _openTransactionFormModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (_) {
@@ -80,13 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(
-              child: Card(
-                color: Colors.blue,
-                child: Text('Gráfico'),
-                elevation: 5,
-              ),
-            ),
+            Chart(),
             TransactionList(_transactions),
           ],
         ),
@@ -96,6 +101,24 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () => _openTransactionFormModal(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+}
+
+class Chart extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.blue,
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          'Gráfico',
+          style: Theme.of(context).textTheme.headlineSmall,
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }
